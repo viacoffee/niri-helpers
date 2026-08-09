@@ -1,0 +1,32 @@
+# Changelog
+
+## v1.1.0 — 2026-08-09
+
+Added
+
+- `niri_windows_json`, `niri_workspaces_json`, and `niri_outputs_json` are now
+  public. They were `_`-prefixed and undocumented; they are the intended
+  extension point for writing queries this library doesn't cover, so pipe them
+  into your own `jq`. The old underscore names are gone rather than aliased,
+  since nothing outside the repo should have been calling them.
+
+Changed
+
+- Snapshot accessors no longer try to write the fetched value back to
+  `_NIRI_*`. The assignment happened inside the subshell, so it was discarded
+  before any caller could see it; `niri_init` was always the only thing that
+  filled the snapshot.
+- `niri_focus_or_spawn` calls `niri_windows_matching` instead of carrying a
+  second copy of the app_id/title regex.
+- The example scripts use the public accessors instead of reading `_NIRI_*`
+  directly.
+
+Removed
+
+- `_niri_extract_ids`, inlined as `jq -r '.id'` at its two call sites.
+
+No public `niri_*` function changed its signature or behavior.
+
+## v1.0.0
+
+Initial release.

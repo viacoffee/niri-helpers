@@ -17,7 +17,7 @@ It's a single self-contained file. Drop it somewhere on disk and source it:
 
 ```bash
 curl -o ~/.local/lib/niri-helpers.sh \
-  https://raw.githubusercontent.com/viacoffee/niri-helpers/main/niri-helpers.sh
+  https://raw.githubusercontent.com/viacoffee/niri-helpers/v1.1.0/niri-helpers.sh
 ```
 
 Then source it from your scripts:
