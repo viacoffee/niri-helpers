@@ -20,26 +20,26 @@ niri_init() {
   _NIRI_OUTPUTS=$(niri msg --json outputs)
 }
 
-# -------------------------------------------------------------------
-# Internal helpers
-# -------------------------------------------------------------------
-
 # Snapshot accessors. Return the pre-fetched snapshot if niri_init was
 # called, otherwise fetch fresh from niri IPC.
 #
 # Don't add a write-back here: these always run in a pipe's subshell, so
 # the assignment would be discarded. Only niri_init can fill the cache.
-_niri_windows_json() {
+niri_windows_json() {
   echo "${_NIRI_WINDOWS:-$(niri msg --json windows)}"
 }
 
-_niri_workspaces_json() {
+niri_workspaces_json() {
   echo "${_NIRI_WORKSPACES:-$(niri msg --json workspaces)}"
 }
 
-_niri_outputs_json() {
+niri_outputs_json() {
   echo "${_NIRI_OUTPUTS:-$(niri msg --json outputs)}"
 }
+
+# -------------------------------------------------------------------
+# Internal helpers
+# -------------------------------------------------------------------
 
 # Extract .id from streamed JSON objects
 _niri_extract_ids() {
@@ -63,7 +63,7 @@ _niri_message_to_ids() {
 niri_is_window_focused() {
   local window_id="$1"
 
-  _niri_windows_json |
+  niri_windows_json |
     jq -e --argjson wid "$window_id" '
       any(.id == $wid and .is_focused)
     ' > /dev/null
@@ -71,7 +71,7 @@ niri_is_window_focused() {
 
 # Return the ID of the focused window
 niri_focused_window_id() {
-  _niri_windows_json |
+  niri_windows_json |
     jq -r '.[] | select(.is_focused) | .id'
 }
 
@@ -79,7 +79,7 @@ niri_focused_window_id() {
 # Read from the workspaces snapshot so it still works on an empty workspace,
 # where no window is focused.
 niri_focused_workspace_id() {
-  _niri_workspaces_json |
+  niri_workspaces_json |
     jq -r '.[] | select(.is_focused) | .id'
 }
 
@@ -92,7 +92,7 @@ niri_windows_on_workspace() {
     ws_id="$(niri_focused_workspace_id)"
   fi
 
-  _niri_windows_json |
+  niri_windows_json |
     jq -c --argjson ws "$ws_id" '.[] | select(.workspace_id == $ws)'
 }
 
@@ -100,7 +100,7 @@ niri_windows_on_workspace() {
 niri_windows_matching() {
   local pattern="$1"
 
-  _niri_windows_json |
+  niri_windows_json |
     jq -c --arg p "$pattern" '
       .[]
       | select(
@@ -116,7 +116,7 @@ niri_windows_matching() {
 
 # Close all windows
 niri_close_all_windows() {
-  _niri_windows_json |
+  niri_windows_json |
     jq -r '.[].id' |
     _niri_message_to_ids close-window
 }
@@ -150,7 +150,7 @@ niri_focus_or_spawn() {
 
   local window_id
   window_id="$(
-    _niri_windows_json |
+    niri_windows_json |
       jq -r --arg p "$pattern" '
         first(
           .[]
@@ -175,14 +175,14 @@ niri_focus_or_spawn() {
 
 # Return the name of the focused workspace (empty if unnamed)
 niri_focused_workspace_name() {
-  _niri_workspaces_json |
+  niri_workspaces_json |
     jq -r '.[] | select(.is_focused) | .name // empty'
 }
 
 # Return workspace JSON object(s) matching a name
 niri_workspace_by_name() {
   local name="$1"
-  _niri_workspaces_json |
+  niri_workspaces_json |
     jq -c --arg n "$name" '.[] | select(.name == $n)'
 }
 
@@ -192,14 +192,14 @@ niri_workspace_by_name() {
 
 # Return the name of the focused output
 niri_focused_output() {
-  _niri_workspaces_json |
+  niri_workspaces_json |
     jq -r '.[] | select(.is_focused) | .output'
 }
 
 # Return all workspaces on an output as streamed JSON objects
 niri_workspaces_on_output() {
   local output="$1"
-  _niri_workspaces_json |
+  niri_workspaces_json |
     jq -c --arg out "$output" '.[] | select(.output == $out)'
 }
 
@@ -207,8 +207,8 @@ niri_workspaces_on_output() {
 niri_windows_on_output() {
   local output="$1"
   jq -cn \
-    --argjson wins "$(_niri_windows_json)" \
-    --argjson ws "$(_niri_workspaces_json)" \
+    --argjson wins "$(niri_windows_json)" \
+    --argjson ws "$(niri_workspaces_json)" \
     --arg out "$output" '
       ([$ws[] | select(.output == $out) | .id]) as $ws_ids
       | $wins[]

@@ -69,6 +69,16 @@ Note that a snapshot is a point-in-time copy. If your script closes windows and 
 | Function | Description |
 |---|---|
 | `niri_init` | Pre-fetch windows, workspaces, and outputs into `$_NIRI_WINDOWS`, `$_NIRI_WORKSPACES`, `$_NIRI_OUTPUTS` |
+| `niri_windows_json` | Raw windows snapshot as a JSON array |
+| `niri_workspaces_json` | Raw workspaces snapshot as a JSON array |
+| `niri_outputs_json` | Raw outputs snapshot as a JSON array |
+
+The three `*_json` accessors are the extension point: pipe them into your own `jq` to build queries this library doesn't cover. They respect the snapshot, so a function you write costs no extra IPC after `niri_init`.
+
+```bash
+# how many windows each app has open
+niri_windows_json | jq -r 'group_by(.app_id)[] | "\(length)\t\(.[0].app_id)"'
+```
 
 ### Query primitives
 
