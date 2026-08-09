@@ -41,11 +41,6 @@ niri_outputs_json() {
 # Internal helpers
 # -------------------------------------------------------------------
 
-# Extract .id from streamed JSON objects
-_niri_extract_ids() {
-  jq -r '.id'
-}
-
 # Send a niri action to each window ID read from stdin
 # Usage: _niri_message_to_ids <action>
 _niri_message_to_ids() {
@@ -124,7 +119,7 @@ niri_close_all_windows() {
 # Close all windows on a workspace (default: focused workspace)
 niri_close_all_on_workspace() {
   niri_windows_on_workspace "$@" |
-    _niri_extract_ids |
+    jq -r '.id' |
     _niri_message_to_ids close-window
 }
 
@@ -139,7 +134,7 @@ niri_close_unfocused_on_workspace() {
 niri_close_matching() {
   local pattern="$1"
   niri_windows_matching "$pattern" |
-    _niri_extract_ids |
+    jq -r '.id' |
     _niri_message_to_ids close-window
 }
 
