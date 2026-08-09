@@ -2,7 +2,7 @@
 
 A bash library for [niri](https://github.com/niri-wm/niri) window management automation.
 
-Abstracts the `niri msg --json | jq` pattern into named, composable functions with a snapshot-based caching model to minimize IPC round-trips.
+Abstracts the `niri msg --json | jq` pattern into named, composable functions with a snapshot model to minimize IPC round-trips.
 
 ## Requirements
 
@@ -48,19 +48,19 @@ Default: `uwsm-app`.
 prefix on the `source` builtin is discarded when `source` returns, leaving the
 override empty for later calls.)
 
-## Caching model
+## Snapshot model
 
-All query functions use a lazy-cache: the first call fetches data from niri's IPC and stores it in `_NIRI_WINDOWS`, `_NIRI_WORKSPACES`, or `_NIRI_OUTPUTS`. Subsequent calls in the same process return the cached value.
-
-Call `niri_init` once at the top of any script that uses multiple query functions to pre-warm all three caches upfront:
+Call `niri_init` once at the top of any script that uses more than one query function. It fetches windows, workspaces, and outputs into `_NIRI_WINDOWS`, `_NIRI_WORKSPACES`, and `_NIRI_OUTPUTS`, and every query function reads from those:
 
 ```bash
 source niri-helpers.sh
 niri_init
-# all subsequent calls use cached data
+# all subsequent calls use the snapshot — no further IPC
 ```
 
-**Subshell note:** The lazy-cache sets variables in the calling shell context. Subshells (pipes, `$(...)`) inherit the parent's variables but can't write back to them — so if you don't call `niri_init` first, each subshell that needs data will issue its own IPC request. `niri_init` sidesteps this by setting all variables in the main shell before any subshells run.
+With an empty snapshot, each query function falls back to its own IPC fetch. Only `niri_init` can fill the snapshot, because it assigns in your shell. Query functions run inside the subshell bash creates for a pipe, where an assignment wouldn't outlive the call.
+
+Note that a snapshot is a point-in-time copy. If your script closes windows and then queries again, call `niri_init` a second time to re-sync.
 
 ## Function reference
 

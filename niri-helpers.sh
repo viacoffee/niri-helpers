@@ -2,8 +2,8 @@
 # Snapshot-based helpers for niri window management
 # Intended to be sourced, not executed
 #
-# Call niri_init to pre-fetch window/workspace state once. All functions
-# lazy-cache on first call if niri_init was not called explicitly.
+# Call niri_init once to pre-fetch window/workspace/output state. Without it,
+# each query function issues its own niri IPC request.
 
 # App launcher used by niri_focus_or_spawn; override before sourcing if needed
 NIRI_APP_LAUNCHER="${NIRI_APP_LAUNCHER:-uwsm-app}"
@@ -24,22 +24,21 @@ niri_init() {
 # Internal helpers
 # -------------------------------------------------------------------
 
-# Lazy-cached snapshot accessors — fetch from niri IPC on first call,
-# return the cached value on subsequent calls within the same process.
-# Call niri_init upfront to pre-warm all three at once.
+# Snapshot accessors. Return the pre-fetched snapshot if niri_init was
+# called, otherwise fetch fresh from niri IPC.
+#
+# Don't add a write-back here: these always run in a pipe's subshell, so
+# the assignment would be discarded. Only niri_init can fill the cache.
 _niri_windows_json() {
-  _NIRI_WINDOWS="${_NIRI_WINDOWS:-$(niri msg --json windows)}"
-  echo "$_NIRI_WINDOWS"
+  echo "${_NIRI_WINDOWS:-$(niri msg --json windows)}"
 }
 
 _niri_workspaces_json() {
-  _NIRI_WORKSPACES="${_NIRI_WORKSPACES:-$(niri msg --json workspaces)}"
-  echo "$_NIRI_WORKSPACES"
+  echo "${_NIRI_WORKSPACES:-$(niri msg --json workspaces)}"
 }
 
 _niri_outputs_json() {
-  _NIRI_OUTPUTS="${_NIRI_OUTPUTS:-$(niri msg --json outputs)}"
-  echo "$_NIRI_OUTPUTS"
+  echo "${_NIRI_OUTPUTS:-$(niri msg --json outputs)}"
 }
 
 # Extract .id from streamed JSON objects
