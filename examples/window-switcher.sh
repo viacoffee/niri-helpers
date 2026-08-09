@@ -13,14 +13,14 @@ niri_init
 
 # Build tab-separated list: "id\t[ws_idx]  app_id: title"
 # Focused window sorted first and marked with *.
-entries="$(jq -r --argjson ws "$_NIRI_WORKSPACES" '
+entries="$(jq -r --argjson ws "$(niri_workspaces_json)" '
   ($ws | map({(.id | tostring): .idx}) | add) as $ws_map
   | sort_by(.is_focused | not)
   | .[]
   | ($ws_map[.workspace_id | tostring] // "?") as $idx
   | (if .is_focused then "* " else "  " end) as $mark
   | "\(.id)\t\($mark)[\($idx)]  \(.app_id // "unknown"): \(.title // "untitled")"
-' <<< "$_NIRI_WINDOWS")"
+' <<< "$(niri_windows_json)")"
 
 [[ -z "$entries" ]] && exit 0
 

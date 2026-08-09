@@ -33,8 +33,8 @@ niri_workspaces_on_output "$focused_output" | while read -r ws; do
 done
 
 # List any named workspaces across all outputs
-named="$(jq -r '.[] | select(.name != null) | "  \(.name) → [\(.idx)] on \(.output)"' \
-  <<< "$_NIRI_WORKSPACES")"
+named="$(niri_workspaces_json |
+  jq -r '.[] | select(.name != null) | "  \(.name) → [\(.idx)] on \(.output)"')"
 
 if [[ -n "$named" ]]; then
   echo
