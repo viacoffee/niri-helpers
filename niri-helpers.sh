@@ -149,22 +149,14 @@ niri_focus_or_spawn() {
   shift
 
   local window_id
-  window_id="$(
-    niri_windows_json |
-      jq -r --arg p "$pattern" '
-        first(
-          .[]
-          | select(
-              (.app_id // "" | test($p; "i")) or
-              (.title  // "" | test($p; "i"))
-            )
-        ).id // empty
-      '
-  )"
+  # -s slurps the whole stream so first() can't close the pipe early and
+  # hand jq a SIGPIPE under `set -o pipefail`
+  window_id="$(niri_windows_matching "$pattern" | jq -r -s 'first(.[]).id // empty')"
 
   if [[ -n "$window_id" ]]; then
-    _niri_message_to_ids focus-window <<<"$window_id"
+    niri msg action focus-window --id "$window_id"
   else
+    # unquoted on purpose: launcher may include args
     $NIRI_APP_LAUNCHER -- "$@" &
   fi
 }
