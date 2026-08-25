@@ -8,13 +8,14 @@ set -euo pipefail
 
 action="${1:-shutdown}"
 
+case "$action" in
+  reboot)   systemctl_action=reboot ;;
+  shutdown) systemctl_action=poweroff ;;
+  *) echo "Usage: $(basename "$0") [reboot|shutdown]"; exit 1 ;;
+esac
+
 source "$(dirname "$(realpath "$0")")/../niri-helpers.sh"
 
 niri_close_all_windows || true
 sleep 1
-
-case "$action" in
-  reboot)   systemctl reboot --no-wall ;;
-  shutdown) systemctl poweroff --no-wall ;;
-  *) echo "Usage: $(basename "$0") [reboot|shutdown]"; exit 1 ;;
-esac
+systemctl "$systemctl_action" --no-wall
