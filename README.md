@@ -108,6 +108,7 @@ niri_windows_json | jq -r 'group_by(.app_id)[] | "\(length)\t\(.[0].app_id)"'
 | `niri_focused_window_id` | Focused window ID. |
 | `niri_focused_workspace_id` | Focused workspace ID, including on an empty workspace. |
 | `niri_windows_on_workspace [ws_id]` | Windows on `ws_id`, or the focused workspace by default. |
+| `niri_tiled_windows_on_workspace_sorted [ws_id]` | Tiled windows on `ws_id`, or the focused workspace, in scrolling-layout order. |
 | `niri_windows_matching <pattern>` | Matching windows. |
 | `niri_focused_workspace_name` | Focused workspace name; empty when unnamed. |
 | `niri_workspace_by_name <name>` | Workspaces with that name. |

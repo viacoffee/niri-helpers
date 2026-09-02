@@ -91,6 +91,20 @@ niri_windows_on_workspace() {
     jq -c --argjson ws "$ws_id" '.[] | select(.workspace_id == $ws)'
 }
 
+# Return tiled windows on a workspace in scrolling-layout order.
+# If no workspace ID is given, defaults to the focused workspace.
+niri_tiled_windows_on_workspace_sorted() {
+  niri_windows_on_workspace "$@" |
+    jq -s '
+      map(select(.is_floating | not))
+      | sort_by([
+          .layout.pos_in_scrolling_layout[0],
+          .layout.pos_in_scrolling_layout[1]
+        ])
+      | .[]
+    '
+}
+
 # Return windows matching a pattern in app_id or title as streamed JSON objects
 niri_windows_matching() {
   local pattern="$1"
