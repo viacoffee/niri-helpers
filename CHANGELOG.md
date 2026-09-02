@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.0 — 2026-09-02
+
+Added
+
+- `niri_tiled_windows_on_workspace_sorted` returns tiled windows in scrolling-layout order.
+
 ## v1.1.0 — 2026-08-09
 
 Added
