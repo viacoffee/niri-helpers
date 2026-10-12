@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+Fixed
+
+- JSON accessors now preserve IPC failures, and `niri_init` only updates its
+  snapshot after all IPC requests succeed.
+- `niri_focus_or_spawn` returns query errors instead of treating them as a
+  missing window and launching an application.
+- The window switcher sanitizes control characters in labels and validates the
+  selected window ID against its snapshot.
+
 ## v1.2.0 — 2026-09-02
 
 Added
