@@ -26,15 +26,27 @@ niri_init() {
 # Don't add a write-back here: these always run in a pipe's subshell, so
 # the assignment would be discarded. Only niri_init can fill the cache.
 niri_windows_json() {
-  echo "${_NIRI_WINDOWS:-$(niri msg --json windows)}"
+  if [[ ${_NIRI_WINDOWS+x} ]]; then
+    printf '%s\n' "$_NIRI_WINDOWS"
+  else
+    niri msg --json windows
+  fi
 }
 
 niri_workspaces_json() {
-  echo "${_NIRI_WORKSPACES:-$(niri msg --json workspaces)}"
+  if [[ ${_NIRI_WORKSPACES+x} ]]; then
+    printf '%s\n' "$_NIRI_WORKSPACES"
+  else
+    niri msg --json workspaces
+  fi
 }
 
 niri_outputs_json() {
-  echo "${_NIRI_OUTPUTS:-$(niri msg --json outputs)}"
+  if [[ ${_NIRI_OUTPUTS+x} ]]; then
+    printf '%s\n' "$_NIRI_OUTPUTS"
+  else
+    niri msg --json outputs
+  fi
 }
 
 # -------------------------------------------------------------------
