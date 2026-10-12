@@ -15,9 +15,15 @@ NIRI_APP_LAUNCHER="${NIRI_APP_LAUNCHER:-uwsm-app}"
 # Pre-fetch all snapshots. Call this once at script start to avoid
 # multiple IPC round-trips when using several query functions.
 niri_init() {
-  _NIRI_WINDOWS=$(niri msg --json windows)
-  _NIRI_WORKSPACES=$(niri msg --json workspaces)
-  _NIRI_OUTPUTS=$(niri msg --json outputs)
+  local windows workspaces outputs
+
+  windows=$(niri msg --json windows) || return $?
+  workspaces=$(niri msg --json workspaces) || return $?
+  outputs=$(niri msg --json outputs) || return $?
+
+  _NIRI_WINDOWS=$windows
+  _NIRI_WORKSPACES=$workspaces
+  _NIRI_OUTPUTS=$outputs
 }
 
 # Snapshot accessors. Return the pre-fetched snapshot if niri_init was
