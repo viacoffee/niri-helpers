@@ -79,6 +79,12 @@ consistent compositor state.
 
 ## Function reference
 
+Query and close helpers return nonzero on IPC or JSON-query failures, regardless
+of the caller's `errexit` or `pipefail` settings. An empty query result is normally
+successful; `niri_is_window_focused` returns nonzero when the window is not focused.
+Close helpers finish selecting targets before sending actions and send none if
+selection fails.
+
 Functions that return windows or workspaces write one compact JSON object per
 line. The `*_json` accessors write a JSON array. Match patterns are
 case-insensitive `jq` regular expressions against a window's `app_id` or

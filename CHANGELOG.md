@@ -4,6 +4,9 @@
 
 Fixed
 
+- Query and close helpers propagate IPC and JSON-query failures without relying
+  on the caller's shell options. Close helpers finish selecting targets before
+  sending any actions, so a failed selection cannot close a partial result.
 - `clear-workspace.sh` rejects unknown or extra arguments before making IPC
   requests, so a mistyped `--keep` cannot close the focused window.
 - JSON accessors now preserve IPC failures, and `niri_init` only updates its
