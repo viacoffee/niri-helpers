@@ -59,13 +59,19 @@ niri_outputs_json() {
 # Internal helpers
 # -------------------------------------------------------------------
 
-# Send a niri action to each window ID read from stdin
+# Send a niri action to each window ID read from stdin.
+# Attempt every ID and return 1 if any action fails.
 # Usage: _niri_message_to_ids <action>
 _niri_message_to_ids() {
   local action="$1"
-  while read -r id; do
-    niri msg action "$action" --id "$id"
+  local id status=0
+  while IFS= read -r id; do
+    if ! niri msg action "$action" --id "$id"; then
+      status=1
+      printf 'niri-helpers: %s failed for window %s\n' "$action" "$id" >&2
+    fi
   done
+  return "$status"
 }
 
 # -------------------------------------------------------------------

@@ -4,6 +4,9 @@
 
 Fixed
 
+- Batch close helpers attempt every selected window and return status 1 if any
+  action fails, even if later actions succeed. Each failed action is reported
+  with its window ID.
 - Query and close helpers propagate IPC and JSON-query failures without relying
   on the caller's shell options. Close helpers finish selecting targets before
   sending any actions, so a failed selection cannot close a partial result.

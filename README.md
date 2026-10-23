@@ -83,7 +83,9 @@ Query and close helpers return nonzero on IPC or JSON-query failures, regardless
 of the caller's `errexit` or `pipefail` settings. An empty query result is normally
 successful; `niri_is_window_focused` returns nonzero when the window is not focused.
 Close helpers finish selecting targets before sending actions and send none if
-selection fails.
+selection fails. Once selection succeeds, they attempt every target, report each
+failed action with its window ID on stderr, and return status 1 if any action
+fails (0 if all succeed or there are no targets).
 
 Functions that return windows or workspaces write one compact JSON object per
 line. The `*_json` accessors write a JSON array. Match patterns are
