@@ -4,6 +4,8 @@
 
 Fixed
 
+- `niri_windows_on_output` passes snapshots through stdin instead of process
+  arguments, avoiding argument-size failures with large window or workspace data.
 - Batch close helpers attempt every selected window and return status 1 if any
   action fails, even if later actions succeed. Each failed action is reported
   with its window ID.

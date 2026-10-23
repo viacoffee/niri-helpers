@@ -256,12 +256,10 @@ niri_windows_on_output() {
   local windows workspaces
   windows=$(niri_windows_json) || return $?
   workspaces=$(niri_workspaces_json) || return $?
-  jq -cn \
-    --argjson wins "$windows" \
-    --argjson ws "$workspaces" \
-    --arg out "$output" '
-      ([$ws[] | select(.output == $out) | .id]) as $ws_ids
-      | $wins[]
-      | select(.workspace_id as $wid | $ws_ids | any(. == $wid))
-    '
+  # Keep snapshots on stdin to avoid the OS's per-argument size limit.
+  jq -c --arg out "$output" '
+    ([.workspaces[] | select(.output == $out) | .id]) as $ws_ids
+    | .windows[]
+    | select(.workspace_id as $wid | $ws_ids | any(. == $wid))
+  ' <<< "{\"windows\":$windows,\"workspaces\":$workspaces}"
 }
