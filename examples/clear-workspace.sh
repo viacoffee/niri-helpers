@@ -10,6 +10,11 @@
 #   clear-workspace --keep    Clears clutter while keeping what you're looking at
 set -euo pipefail
 
+if [[ $# -gt 1 || ( $# -eq 1 && ${1:-} != --keep ) ]]; then
+  printf 'Usage: %s [--keep]\n' "${0##*/}" >&2
+  exit 2
+fi
+
 source "$(dirname "$(realpath "$0")")/../niri-helpers.sh"
 
 case "${1:-}" in

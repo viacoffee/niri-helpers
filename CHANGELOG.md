@@ -4,6 +4,8 @@
 
 Fixed
 
+- `clear-workspace.sh` rejects unknown or extra arguments before making IPC
+  requests, so a mistyped `--keep` cannot close the focused window.
 - JSON accessors now preserve IPC failures, and `niri_init` only updates its
   snapshot after all IPC requests succeed.
 - `niri_focus_or_spawn` returns query errors instead of treating them as a
