@@ -19,7 +19,7 @@ Download the versioned single-file release:
 ```bash
 mkdir -p ~/.local/lib
 curl --fail --location --output ~/.local/lib/niri-helpers.sh \
-  https://raw.githubusercontent.com/viacoffee/niri-helpers/v1.2.0/niri-helpers.sh
+  https://raw.githubusercontent.com/viacoffee/niri-helpers/v1.2.1/niri-helpers.sh
 ```
 
 Source it from a script:
